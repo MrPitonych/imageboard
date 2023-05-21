@@ -1,8 +1,8 @@
-FROM mysql:5.7
-MAINTAINER Hide <padocon@naver.com>
+FROM postgres:15.3
 
 #ADD ./mysql-init-files /docker-entrypoint-initdb.d
-ENV MYSQL_DATABASE=fastapi
-ENV MYSQL_ROOT_PASSWORD=fastapi
-EXPOSE 3306
-CMD ["mysqld"]
+
+ENV POSTGRES_USER=fastapi
+ENV POSTGRES_PASSWORD=fastapi
+ENV POSTGRES_DB=fastapi
+EXPOSE 5432

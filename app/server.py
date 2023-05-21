@@ -76,7 +76,7 @@ def create_app() -> FastAPI:
         title="Hide",
         description="Hide API",
         version="1.0.0",
-        docs_url=None if config.ENV == "production" else "/docs",
+        docs_url=None if config.ENV == "production" else "8",
         redoc_url=None if config.ENV == "production" else "/redoc",
         dependencies=[Depends(Logging)],
         middleware=make_middleware(),

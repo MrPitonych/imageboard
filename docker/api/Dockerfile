@@ -1,16 +1,35 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
-MAINTAINER Hide <padocon@naver.com>
+FROM python:3.11-slim-buster
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWIRTEBYTECODE=1 \
+    PYSETUP_PATH=/opt/pysetup \
+    APPLICATION_PATH=/usr/app
+ENV VENV_PATH=$PYSETUP_PATH/.venv
+ENV PATH=$VENV_PATH/bin:$PATH
+
+RUN apt-get update && apt-get install -y --no-install-recommends libpq5
+
+ENV PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_HOME=/opt/poetry/ \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VERSION=1.5.0
+ENV PATH=$POETRY_HOME/bin:$PATH
+
+WORKDIR $PYSETUP_PATH
+
+RUN apt-get update -y  \
+    && apt-get install -y build-essential libpq-dev curl  \
+    && curl -sSL https://install.python-poetry.org | python
+
+COPY poetry.lock pyproject.toml ./
+
+RUN poetry install -n --no-root --no-dev
 
 COPY . /home
 WORKDIR /home
-ENV ENV=dev
-RUN pip install "poetry==1.2.1"
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN chmod +x /home/docker/api/startup.sh
 ENTRYPOINT /home/docker/api/startup.sh

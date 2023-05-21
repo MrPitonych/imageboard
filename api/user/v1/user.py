@@ -20,7 +20,7 @@ user_router = APIRouter()
 
 
 @user_router.get(
-    "",
+    "/",
     response_model=List[GetUserListResponseSchema],
     response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
@@ -34,7 +34,7 @@ async def get_user_list(
 
 
 @user_router.post(
-    "",
+    "/",
     response_model=CreateUserResponseSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
